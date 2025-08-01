@@ -1,5 +1,6 @@
-// API Base URL
-const API_BASE_URL = 'http://localhost:8000';
+// API Base URL - Use environment variable or fallback to localhost for development
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 
+  (import.meta.env.DEV ? 'http://localhost:8000' : window.location.origin);
 
 // Generic HTTP functions for use by service files
 export const get = async <T>(endpoint: string): Promise<T> => {

@@ -1,5 +1,5 @@
 from pydantic_settings import BaseSettings
-from typing import Optional
+from typing import Optional, List
 import os
 
 class Settings(BaseSettings):
@@ -7,8 +7,15 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     PROJECT_NAME: str = "Scriptodon Test Automation Platform"
     
-    # CORS
-    BACKEND_CORS_ORIGINS: list = ["http://localhost:3000", "http://localhost:5173"]
+    # CORS - Support both development and production
+    BACKEND_CORS_ORIGINS: List[str] = [
+        "http://localhost:3000", 
+        "http://localhost:5173",
+        "https://*.vercel.app",  # Allow all Vercel domains
+        "https://*.railway.app",  # Allow Railway domains
+        "https://*.render.com",   # Allow Render domains
+        "https://*.herokuapp.com" # Allow Heroku domains
+    ]
     
     # AI API Configuration
     OPENROUTER_API_KEY: Optional[str] = None
