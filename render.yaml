@@ -10,4 +10,5 @@ services:
       - key: DATABASE_URL
         value: sqlite:///./scritodon.db
       - key: OPENROUTER_API_KEY
-        sync: false 
+        sync: false
+    pythonVersion: 3.11.7 
