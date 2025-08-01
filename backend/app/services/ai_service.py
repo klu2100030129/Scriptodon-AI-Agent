@@ -10,11 +10,12 @@ class AIService:
         self.site_url = settings.OPENROUTER_SITE_URL
         self.site_name = settings.OPENROUTER_SITE_NAME
         self.base_url = "https://openrouter.ai/api/v1/chat/completions"
-        self.model = "qwen/qwen2.5-vl-72b-instruct:free"
+        self.model = "qwen/qwen-2.5-72b-instruct:free"
 
     async def generate_test_cases(self, input_content: str, source_type: str) -> List[Dict[str, Any]]:
-        if not self.api_key:
-            raise Exception("OpenRouter API key not configured")
+        if not self.api_key or self.api_key == "your_openrouter_api_key_here":
+            # Return sample test cases when API key is not configured
+            return self._get_sample_test_cases(input_content, source_type)
         
         prompt = self._build_test_case_prompt(input_content, source_type)
         
@@ -25,8 +26,9 @@ class AIService:
             raise Exception(f"Error generating test cases: {str(e)}")
 
     async def generate_automation_script(self, test_cases: List[Dict], script_type: str) -> str:
-        if not self.api_key:
-            raise Exception("OpenRouter API key not configured")
+        if not self.api_key or self.api_key == "your_openrouter_api_key_here":
+            # Return sample script when API key is not configured
+            return self._get_sample_script(test_cases, script_type)
         
         prompt = self._build_script_prompt(test_cases, script_type)
         
@@ -35,6 +37,87 @@ class AIService:
             return response
         except Exception as e:
             raise Exception(f"Error generating automation script: {str(e)}")
+
+    def _get_sample_test_cases(self, input_content: str, source_type: str) -> List[Dict[str, Any]]:
+        """Return sample test cases when API key is not configured"""
+        return [
+            {
+                "title": f"Sample Test Case for {source_type}",
+                "description": f"Generated test case based on {source_type} input",
+                "steps": "1. Load the application\n2. Navigate to the feature\n3. Perform the test action\n4. Verify the expected result",
+                "expected_result": "The feature should work as expected"
+            },
+            {
+                "title": f"Edge Case Test for {source_type}",
+                "description": f"Test edge cases for {source_type} functionality",
+                "steps": "1. Test with invalid input\n2. Test with boundary values\n3. Test error handling\n4. Verify error messages",
+                "expected_result": "Application should handle errors gracefully"
+            }
+        ]
+
+    def _get_sample_script(self, test_cases: List[Dict], script_type: str) -> str:
+        """Return sample automation script when API key is not configured"""
+        if script_type == "playwright_python":
+            return '''from playwright.sync_api import sync_playwright
+import time
+
+def test_sample_functionality():
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=False)
+        page = browser.new_page()
+        
+        try:
+            # Navigate to the application
+            page.goto("http://localhost:3000")
+            
+            # Wait for page to load
+            page.wait_for_load_state("networkidle")
+            
+            # Sample test steps
+            print("Running sample test case...")
+            
+            # Add your test steps here
+            # Example: page.click("button")
+            # Example: page.fill("input", "test data")
+            
+            print("Test completed successfully!")
+            
+        except Exception as e:
+            print(f"Test failed: {e}")
+        finally:
+            browser.close()
+
+if __name__ == "__main__":
+    test_sample_functionality()'''
+        else:
+            return '''# Sample Selenium script
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+def test_sample_functionality():
+    driver = webdriver.Chrome()
+    
+    try:
+        # Navigate to the application
+        driver.get("http://localhost:3000")
+        
+        # Sample test steps
+        print("Running sample test case...")
+        
+        # Add your test steps here
+        # Example: driver.find_element(By.ID, "button").click()
+        
+        print("Test completed successfully!")
+        
+    except Exception as e:
+        print(f"Test failed: {e}")
+    finally:
+        driver.quit()
+
+if __name__ == "__main__":
+    test_sample_functionality()'''
 
     async def _make_openrouter_request(self, prompt: str) -> str:
         headers = {
@@ -49,12 +132,7 @@ class AIService:
             "messages": [
                 {
                     "role": "user",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": prompt
-                        }
-                    ]
+                    "content": prompt
                 }
             ]
         }
