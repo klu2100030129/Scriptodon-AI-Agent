@@ -1,6 +1,70 @@
 // API Base URL
 const API_BASE_URL = 'http://localhost:8000';
 
+// Generic HTTP functions for use by service files
+export const get = async <T>(endpoint: string): Promise<T> => {
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
+  }
+
+  return await response.json();
+};
+
+export const post = async <T>(endpoint: string, data?: any): Promise<T> => {
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: data ? JSON.stringify(data) : undefined,
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
+  }
+
+  return await response.json();
+};
+
+export const postFormData = async <T>(endpoint: string, formData: FormData): Promise<T> => {
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    method: 'POST',
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
+  }
+
+  return await response.json();
+};
+
+export const del = async <T>(endpoint: string): Promise<T> => {
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
+  }
+
+  return await response.json();
+};
+
 // API Service for connecting to the Scriptodon Backend
 export class ApiService {
   private baseUrl: string;
@@ -134,7 +198,7 @@ export class ApiService {
 
   async deleteTestRun(testRunId: number): Promise<{ message: string }> {
     console.log('API: Deleting test run with ID:', testRunId);
-    const result = await this.fetchApi(`/api/test-generation/test-runs/${testRunId}`, {
+    const result = await this.fetchApi<{ message: string }>(`/api/test-generation/test-runs/${testRunId}`, {
       method: 'DELETE',
     });
     console.log('API: Test run deletion result:', result);
@@ -143,7 +207,7 @@ export class ApiService {
 
   async deleteScript(scriptId: number): Promise<{ message: string }> {
     console.log('API: Deleting script with ID:', scriptId);
-    const result = await this.fetchApi(`/api/script-output/scripts/${scriptId}`, {
+    const result = await this.fetchApi<{ message: string }>(`/api/script-output/scripts/${scriptId}`, {
       method: 'DELETE',
     });
     console.log('API: Script deletion result:', result);
