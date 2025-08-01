@@ -12,7 +12,6 @@ class Settings(BaseSettings):
         "http://localhost:3000", 
         "http://localhost:5173",
         "https://*.vercel.app",  # Allow all Vercel domains
-        "https://*.railway.app",  # Allow Railway domains
         "https://*.render.com",   # Allow Render domains
         "https://*.herokuapp.com" # Allow Heroku domains
     ]
