@@ -1,8 +1,8 @@
-from pydantic import BaseSettings
+from pydantic import BaseModel
 from typing import Optional, List
 import os
 
-class Settings(BaseSettings):
+class Settings(BaseModel):
     # API Configuration
     API_V1_STR: str = "/api/v1"
     PROJECT_NAME: str = "Scriptodon Test Automation Platform"
@@ -37,11 +37,21 @@ class Settings(BaseSettings):
     
     # Environment
     ENVIRONMENT: str = "development"
-    
-    class Config:
-        env_file = ".env"
 
-settings = Settings()
+# Load settings from environment variables
+def get_settings():
+    return Settings(
+        OPENROUTER_API_KEY=os.getenv("OPENROUTER_API_KEY"),
+        OPENROUTER_SITE_URL=os.getenv("OPENROUTER_SITE_URL", "http://localhost:3000"),
+        OPENROUTER_SITE_NAME=os.getenv("OPENROUTER_SITE_NAME", "Scriptodon Test Automation Platform"),
+        DATABASE_URL=os.getenv("DATABASE_URL", "sqlite:///./scritodon.db"),
+        JIRA_SERVER_URL=os.getenv("JIRA_SERVER_URL"),
+        JIRA_USERNAME=os.getenv("JIRA_USERNAME"),
+        JIRA_API_TOKEN=os.getenv("JIRA_API_TOKEN"),
+        ENVIRONMENT=os.getenv("ENVIRONMENT", "development")
+    )
+
+settings = get_settings()
 
 # Create upload directory if it doesn't exist
 os.makedirs(settings.UPLOAD_DIR, exist_ok=True) 
