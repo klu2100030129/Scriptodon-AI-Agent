@@ -13,7 +13,9 @@ class Settings(BaseSettings):
         "http://localhost:5173",
         "https://*.vercel.app",  # Allow all Vercel domains
         "https://*.render.com",   # Allow Render domains
-        "https://*.herokuapp.com" # Allow Heroku domains
+        "https://*.herokuapp.com", # Allow Heroku domains
+        "https://scritodon.onrender.com",  # Specific Render domain
+        "https://scritodon-backend.onrender.com"  # Specific Render domain
     ]
     
     # AI API Configuration
@@ -32,6 +34,9 @@ class Settings(BaseSettings):
     JIRA_SERVER_URL: Optional[str] = None
     JIRA_USERNAME: Optional[str] = None
     JIRA_API_TOKEN: Optional[str] = None
+    
+    # Environment
+    ENVIRONMENT: str = "development"
     
     class Config:
         env_file = ".env"
